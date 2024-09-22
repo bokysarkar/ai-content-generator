@@ -14,7 +14,7 @@ export interface HISTORY {
   aiResponse: string | null;
   templateSlug: string;
   createdBy: string;
-  createdAt: string;
+  createdAt: string | null;
 }
 
 function UsageTrack() {
@@ -33,13 +33,14 @@ function UsageTrack() {
   }, [updateCreditUsage && user]);
 
   const GetData = async () => {
-    {
-      /* @ts-igonre */
+    if (!user?.primaryEmailAddress?.emailAddress) {
+      console.error("Email address is undefined");
+      return;
     }
     const result: HISTORY[] = await db
       .select()
       .from(AIOutput)
-      .where(eq(AIOutput.createdBy, user?.primaryEmailAddress?.emailAddress));
+      .where(eq(AIOutput.createdBy, user.primaryEmailAddress.emailAddress));
 
     GetTotalUsage(result);
   };
